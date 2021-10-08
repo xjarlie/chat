@@ -4,3 +4,4 @@ Dockerfile
 docker-compose.debug.yml
 docker-compose.yml
 .vscode/
+db/db.json
