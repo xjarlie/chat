@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('./partials/head'); %>
+
+        <style>
+            html,
+            body {
+                height: 100%;
+            }
+
+            .fullheight {
+                height: 100% !important;
+            }
+
+            #chatPane {
+                display: flex;
+                flex-direction: column-reverse;
+            }
+
+            #inputChat {
+                height: fit-content;
+                padding-bottom: 1em;
+                /* padding-top: 1em; */
+                bottom: 0;
+            }
+
+            #viewChat {
+                height: max-content;
+                display: flex;
+                flex-direction: column-reverse;
+                overflow-y: auto;
+            }
+
+            #messageInputWrap {
+                flex-grow: 3;
+                flex-shrink: 2;
+            }
+
+            #usernameInputWrap {
+                flex-shrink: 10;
+            }
+
+            #sendBtnWrap {
+                padding-left: 1em;
+            }
+
+            .chatMessage {
+                width: 100%;
+                padding: 1em;
+                margin-top: 0.1em;
+                margin-bottom: 0.1em;
+                box-shadow: none;
+            }
+
+            .chatMessage:hover {
+                background-color: lightgrey;
+            }
+
+            .author {
+                font-weight: bold;
+            }
+        </style>
+</head>
+
+<body>
+
+
+    
+
+
+
+    <div class="row fullheight" id="wrap">
+        <div class="navbar" style="position: absolute; top: 0; width: 100%;">
+            <nav class="teal" id="nav">
+                <div class="nav-wrapper">
+                    <a href="#" data-target="nav-mobile" class="sidenav-trigger show-on-large"><i
+                            class="material-icons">menu</i></a>
+                    <a href="#" class="brand-logo center truncate" id="navName">Example Room</a>
+                </div>
+            </nav>
+        </div>
+        <ul id="nav-mobile" class="sidenav">
+            <li><a href="#">Rooms: Coming Soon</a> </li>
+        </ul>
+
+
+        <div class="col s12 fullheight" id="chatPane">
+
+            <div class="col s12 valign-wrapper" id="inputChat">
+                <div class="input-field" id="usernameInputWrap">
+                    <input placeholder="Username" id="authorInput" type="text" />
+                    <label for="authorInput">Username</label>
+                </div>
+                <div class="input-field" id="messageInputWrap">
+                    <input placeholder="Message" id="messageInput" type="text" />
+                </div>
+                <div class="input-field" id="sendBtnWrap">
+                    <button type="button" class="waves-effect waves-light btn" id="sendBtn">
+                        <i class="material-icons">send</i>
+                    </button>
+                </div>
+            </div>
+            <div class="col s12 fullheight" id="viewChat">
+
+            </div>
+        </div>
+    </div>
+
+
+
+    <script src="/chat.js"></script>
+    <%- include('./partials/foot'); %>
+</body>
+
+</html>
