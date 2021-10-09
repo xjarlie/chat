@@ -64,11 +64,13 @@ async function getMessages() {
 
         const data = await response.json();
         const chatDiv = document.getElementById('viewChat');
-        chatDiv.innerHTML = '';
+        const currentMsges = chatDiv.innerHTML;
+
+        const tempChatDiv = document.createElement('div');
 
         // Placeholder for navbar
         for (let i=0; i<1; i++) {
-            const placeholderMessage = new Message('', '', '', 1, chatDiv);
+            const placeholderMessage = new Message('', '', '', 1, tempChatDiv);
             placeholderMessage.init();
         }
 
@@ -76,8 +78,14 @@ async function getMessages() {
             const id = message;
             const { author, text, timestamp } = data[message];
 
-            const messageDOM = new Message(id, author, text, timestamp, chatDiv);
+            const messageDOM = new Message(id, author, text, timestamp, tempChatDiv);
             messageDOM.init();
+        }
+
+        const newMsges = tempChatDiv.innerHTML;
+
+        if (newMsges != currentMsges) {
+            chatDiv.innerHTML = newMsges;
         }
 
     } else if (response.status == 404) {

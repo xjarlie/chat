@@ -1,0 +1,99 @@
+:root {
+    --accent-dark: #512da8;
+    --accent-light: #9575cd;
+    --dark-bg: #121212;
+    --dark-hover: rgba(255, 255, 255, 0.08);
+}
+
+html,
+body {
+    height: 100%;
+    background-color: #121212;
+    color: #fff;
+}
+
+.fullheight {
+    height: 100% !important;
+}
+
+#chatPane {
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+#inputChat {
+    height: fit-content;
+    padding-bottom: 1em;
+    padding-top: 1em;
+    bottom: 0;
+}
+
+#viewChat {
+    height: max-content;
+    display: flex;
+    flex-direction: column-reverse;
+    overflow-y: auto;
+}
+
+#messageInputWrap {
+    flex-grow: 3;
+    flex-shrink: 2;
+}
+
+#usernameInputWrap {
+    flex-shrink: 10;
+}
+
+#sendBtnWrap {
+    padding-left: 1em;
+}
+
+.chatMessage {
+    width: 100%;
+    padding: 1em;
+    margin-top: 0.1em;
+    margin-bottom: 0.1em;
+    box-shadow: none;
+    background-color: #121212;
+    transition: background-color, 0ms;
+}
+
+.chatMessage:hover {
+    background-color: var(--dark-hover);
+    transition-duration: 500ms;
+}
+
+.author {
+    font-weight: bold;
+}
+
+#messageInput,
+#authorInput {
+    color: #fff;
+}
+
+#messageInput:focus,
+#authorInput:focus {
+    border-bottom: 1px solid var(--accent-light);
+    box-shadow: 0 1px 0 0 var(--accent-light);
+}
+
+#usernameInputWrap input:focus + label  {
+    color: #9575cd;
+}
+
+#nav {
+    background-color: var(--accent-dark);
+}
+
+#sendBtn {
+    background-color: var(--accent-dark);
+}
+
+.sidenav {
+    background-color: var(--dark-bg);
+}
+
+.sidenav li a {
+    color: #fff;
+}
