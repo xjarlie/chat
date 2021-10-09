@@ -7,9 +7,10 @@ const { hostname, protocol, port, pathname } = window.location;
 
 const roomID = pathname.split('/')[3];
 console.log(roomID);
+sendBtn.classList.add('disabled');
 
 sendBtn.onclick = async () => {
-    if (messageInput.value) {
+    if (messageInput.value && authorInput.value) {
         const data = { text: messageInput.value.trim(), author: authorInput.value.trim() };
         await sendMessage(data);
         messageInput.focus();
@@ -18,12 +19,26 @@ sendBtn.onclick = async () => {
 
 messageInput.onkeyup = async (e) => {
     if (e.keyCode == 13) {
-        if (messageInput.value) {
+        if (messageInput.value && authorInput.value) {
             const data = { text: messageInput.value.trim(), author: authorInput.value.trim() };
             await sendMessage(data);
         }
     }
-}  
+
+    sendBtnAble();
+}
+
+authorInput.onkeyup = (e) => {
+    sendBtnAble();
+}
+
+function sendBtnAble() {
+    if (messageInput.value && authorInput.value) {
+        sendBtn.classList.remove('disabled');
+    } else {
+        sendBtn.classList.add('disabled');
+    }
+}
 
 async function sendMessage(data) {
     const response = await fetch(`/rooms/${roomID}/messages`, {
@@ -35,6 +50,7 @@ async function sendMessage(data) {
     });
 
     messageInput.value = '';
+    sendBtn.classList.add('disabled');
 
     getMessages();
     return response.json();
