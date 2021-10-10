@@ -8,6 +8,11 @@ const { hostname, protocol, port, pathname } = window.location;
 const roomID = pathname.split('/')[3];
 sendBtn.classList.add('disabled');
 
+document.getElementById('navName').textContent = roomID;
+localStoreRooms();
+authorInput.value = JSON.parse(localStorage.recentRooms)[roomID].username || '';
+
+
 sendBtn.onclick = async () => {
     if (messageInput.value && authorInput.value) {
         const data = { text: messageInput.value.trim(), author: authorInput.value.trim() };
@@ -42,10 +47,9 @@ function sendBtnAble() {
 async function localStoreRooms() {
     const rawRooms = localStorage.recentRooms || '{}';
     const recentRooms = JSON.parse(rawRooms);
-    recentRooms[roomID] = {
-        timestamp: Date.now(),
-        name: roomID
-    };
+    if (!recentRooms[roomID]) recentRooms[roomID] = { name: '1' };
+    recentRooms[roomID].timestamp = Date.now();
+    recentRooms[roomID].name = roomID;
     localStorage.recentRooms = JSON.stringify(recentRooms);
     let dataToSend = {
         order: 'desc',
@@ -63,15 +67,14 @@ async function localStoreRooms() {
 
     for (const i in data) {
         const name = data[i].name;
-
-        const container = document.getElementById('nav-mobile');
-        const li = document.createElement('li');
-        li.innerHTML = `<a href="/app/rooms/${name}" class="waves-effect waves-light">${name}</a>`
-        container.append(li);
+        if (name != roomID) {
+            const container = document.getElementById('nav-mobile');
+            const li = document.createElement('li');
+            li.innerHTML = `<a href="/app/rooms/${name}" class="waves-effect waves-light">${name}</a>`
+            container.append(li);
+        }
     }
-
 }
-localStoreRooms();
 
 async function sendMessage(data) {
     const response = await fetch(`/rooms/${roomID}/messages`, {
@@ -84,6 +87,10 @@ async function sendMessage(data) {
 
     messageInput.value = '';
     sendBtn.classList.add('disabled');
+
+    const recentRooms = JSON.parse(localStorage.recentRooms);
+    recentRooms[roomID].username = authorInput.value.trim();
+    localStorage.recentRooms = JSON.stringify(recentRooms);
 
     getMessages();
     return response.json();
@@ -163,8 +170,8 @@ const placeholderMessage = new Message('', '', '', 1, chatDiv);
 placeholderMessage.init();
 
 let scrolled = false;
-function updateScroll(){
-    if(!scrolled){
+function updateScroll() {
+    if (!scrolled) {
         chatDiv.scrollTop = chatDiv.scrollHeight;
     }
 }

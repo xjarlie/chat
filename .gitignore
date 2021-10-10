@@ -1,4 +1,4 @@
-db/db.json
+database/db.json
 node_modules/
 Dockerfile
 .dockerignore

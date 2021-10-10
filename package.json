@@ -6,7 +6,7 @@
   "scripts": {
     "test": "nodemon -e js,ejs",
     "start": "node server.js",
-    "build": "sudo docker build --rm -t \"xjarlie/chat:beta\" \"/home/xjarlie/coding/chat\""
+    "build": "sudo docker build --rm -t \"xjarlie/chat:beta\" \"/home/xjarlie/coding/chat\" && sudo docker push xjarlie/chat:beta"
   },
   "author": "",
   "license": "ISC",
