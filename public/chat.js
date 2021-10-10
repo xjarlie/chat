@@ -138,24 +138,43 @@ class Message {
         this.author = author;
         this.text = text;
         this.timestamp = timestamp;
+        this.date = new Date(this.timestamp);
         this.chatDiv = chatDiv;
 
+        let timeString;
+        const today = new Date();
+        if (this.date.getDate() == today.getDate()) {
+            timeString = this.date.toLocaleTimeString('en-GB', { timeZone: 'Asia/Seoul' });
+        } else if (this.timestamp == 1) {
+            timeString = '';
+        } else {
+            timeString = this.date.toLocaleDateString('en-GB', { timeZone: 'Asia/Seoul' });
+        }
 
         const messageDiv = document.createElement('div');
         messageDiv.classList.add('chatMessage');
         messageDiv.classList.add('card-panel');
         messageDiv.dataset.messageid = this.messageID;
 
+        const timeSpan = document.createElement('span');
+        timeSpan.classList.add('time');
+        timeSpan.textContent = timeString;
+        // timeSpan.classList.add('tooltipped');
+        // timeSpan.dataset.position = 'top';
+        // timeSpan.dataset.tooltip = this.date.toLocaleString('en-GB', { timeZone: 'Asia/Seoul' });
+        timeSpan.title = this.date.toLocaleString('en-GB', { timeZone: 'Asia/Seoul' });
+
         const authorSpan = document.createElement('span');
         authorSpan.classList.add('author');
-        authorSpan.textContent = `${this.author}: `;
+        authorSpan.textContent = ` ${this.author}: `;
 
         const textSpan = document.createElement('span');
         textSpan.classList.add('text');
         textSpan.textContent = this.text;
 
-        messageDiv.appendChild(authorSpan);
-        messageDiv.appendChild(textSpan);
+        messageDiv.append(timeSpan);
+        messageDiv.append(authorSpan);
+        messageDiv.append(textSpan);
 
         this.messageDiv = messageDiv;
     }
@@ -194,5 +213,8 @@ setInterval(() => {
 document.addEventListener('DOMContentLoaded', function () {
     var elems = document.querySelectorAll('.sidenav');
     var instances = M.Sidenav.init(elems, {});
+
+    var elems2 = document.querySelectorAll('.tooltipped');
+    var instances2 = M.Tooltip.init(elems2, {});
 });
 

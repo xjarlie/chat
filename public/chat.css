@@ -67,6 +67,10 @@ body {
     font-weight: bold;
 }
 
+.time {
+    color: grey;
+}
+
 #messageInput,
 #authorInput {
     color: #fff;
