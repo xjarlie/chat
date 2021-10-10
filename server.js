@@ -7,6 +7,7 @@ const indexRouter = require('./routes/index');
 const appRouter = require('./routes/app');
 const usersRouter = require('./routes/users');
 const roomsRouter = require('./routes/rooms');
+const utilRouter = require('./routes/util');
 
 const app = express();
 const port = 3001;
@@ -22,6 +23,7 @@ app.use('/', indexRouter);
 app.use('/app', appRouter);
 app.use('/users', usersRouter);
 app.use('/rooms', roomsRouter);
+app.use('/util', utilRouter);
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);

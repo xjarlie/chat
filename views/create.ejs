@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('./partials/head'); %>
+
+        <style>
+            :root {
+                --accent-dark: #512da8;
+                --accent-light: #9575cd;
+                --dark-bg: #121212;
+                --dark-hover: rgba(255, 255, 255, 0.08);
+            }
+
+            #inputName:focus {
+                border-bottom: 1px solid var(--accent-light);
+                box-shadow: 0 1px 0 0 var(--accent-light);
+            }
+
+            #inputNameWrap input:focus+label {
+                color: #9575cd;
+            }
+
+            body,
+            .container {
+                background-color: #121212;
+            }
+
+            h2, input {
+                color: white;
+            }
+
+            #sendBtn {
+                background-color: var(--accent-dark);
+            }
+        </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="row">
+            <h2>Create New Room</h2>
+        </div>
+        <div class="row">
+            <div class="input-field" id="inputNameWrap">
+                <input placeholder="Create a name for your new room" id="inputName" type="text"
+                    value="<%= name %>" />
+                <label for="inputName">Room Name</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field" id="sendBtnWrap">
+                <button type="button" class="waves-effect waves-light btn" id="sendBtn">
+                    <i class="material-icons left">add</i>
+                    Create Room
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const inputName = document.getElementById('inputName');
+        const sendBtn = document.getElementById('sendBtn');
+        sendBtn.onclick = async () => {
+            const roomID = inputName.value.trim();
+            if (roomID) {
+                const data = { id: roomID };
+                const response = await fetch(`/rooms`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.status == 200) {
+                    const data = response.json();
+                    alert('Room created');
+                    window.location.href = '/app/rooms/' + roomID;
+                } else if (response.status == 400) {
+                    if (confirm('Room with that name already exists. Go there?')) {
+                        window.location.href = '/app/rooms/' + roomID;
+                    }
+                }
+            }
+        }
+
+        inputName.onkeypress = (e) => {
+            if (e.keyCode == 32) {
+                e.preventDefault();
+            }
+        }
+    </script>
+    <%- include('./partials/foot') %>
+</body>
+
+</html>

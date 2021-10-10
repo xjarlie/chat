@@ -6,7 +6,6 @@ const messageLog = document.getElementById('log');
 const { hostname, protocol, port, pathname } = window.location;
 
 const roomID = pathname.split('/')[3];
-console.log(roomID);
 sendBtn.classList.add('disabled');
 
 sendBtn.onclick = async () => {
@@ -39,6 +38,40 @@ function sendBtnAble() {
         sendBtn.classList.add('disabled');
     }
 }
+
+async function localStoreRooms() {
+    const rawRooms = localStorage.recentRooms || '{}';
+    const recentRooms = JSON.parse(rawRooms);
+    recentRooms[roomID] = {
+        timestamp: Date.now(),
+        name: roomID
+    };
+    localStorage.recentRooms = JSON.stringify(recentRooms);
+    let dataToSend = {
+        order: 'desc',
+        property: 'timestamp',
+        dataset: recentRooms
+    };
+    const response = await fetch('/util/sort', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(dataToSend)
+    });
+    const data = await response.json();
+
+    for (const i in data) {
+        const name = data[i].name;
+
+        const container = document.getElementById('nav-mobile');
+        const li = document.createElement('li');
+        li.innerHTML = `<a href="/app/rooms/${name}" class="waves-effect waves-light">${name}</a>`
+        container.append(li);
+    }
+
+}
+localStoreRooms();
 
 async function sendMessage(data) {
     const response = await fetch(`/rooms/${roomID}/messages`, {
@@ -85,12 +118,11 @@ function lastID() {
         if (chatDiv.children[0].dataset.messageid) {
             return chatDiv.children[0].dataset.messageid;
         } else {
-            return false;
+            return '1';
         }
     } else {
-        return false;
+        return '1';
     }
-
 }
 
 class Message {

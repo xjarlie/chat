@@ -8,11 +8,15 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-    const { name } = req.body;
+    const { id: roomID } = req.body;
 
-    const { path: roomPath, id: roomID } = await db.push('rooms');
-    await db.set(roomPath, { name: name });
-    res.json({ roomID: roomID });
+    const roomData = await db.get(`rooms/${roomID}`);
+    if (roomData || roomID == 'create') {
+        res.status(400).send('Room already exists');
+    } else {
+        await db.set(`rooms/${roomID}`, { name: roomID, exists: true });
+        res.status(200).json({ id: roomID });
+    }
 });
 
 router.get('/:roomID', async (req, res) => {
