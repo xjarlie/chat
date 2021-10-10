@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "test": "nodemon -e js,ejs",
-    "start": "node server.js"
+    "start": "node server.js",
+    "build": "sudo docker build --rm -t \"xjarlie/chat:beta\" \"/home/xjarlie/coding/chat\""
   },
   "author": "",
   "license": "ISC",

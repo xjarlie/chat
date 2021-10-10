@@ -58,39 +58,39 @@ async function sendMessage(data) {
 
 async function getMessages() {
 
-    const response = await fetch(`/rooms/${roomID}/messages`);
+    const response = await fetch(`/rooms/${roomID}/messages/${lastID()}`);
 
     if (response.status == 200) {
 
         const data = await response.json();
         const chatDiv = document.getElementById('viewChat');
-        const currentMsges = chatDiv.innerHTML;
-
-        const tempChatDiv = document.createElement('div');
-
-        // Placeholder for navbar
-        for (let i=0; i<1; i++) {
-            const placeholderMessage = new Message('', '', '', 1, tempChatDiv);
-            placeholderMessage.init();
-        }
 
         for (const message in data) {
-            const id = message;
-            const { author, text, timestamp } = data[message];
+            const { author, text, timestamp, id } = data[message];
 
-            const messageDOM = new Message(id, author, text, timestamp, tempChatDiv);
+            const messageDOM = new Message(id, author, text, timestamp, chatDiv);
             messageDOM.init();
         }
 
-        const newMsges = tempChatDiv.innerHTML;
-
-        if (newMsges != currentMsges) {
-            chatDiv.innerHTML = newMsges;
-        }
+        updateScroll();
 
     } else if (response.status == 404) {
         console.log('404 Received');
     }
+}
+
+function lastID() {
+    const chatDiv = document.getElementById('viewChat');
+    if (chatDiv.children[0]) {
+        if (chatDiv.children[0].dataset.messageid) {
+            return chatDiv.children[0].dataset.messageid;
+        } else {
+            return false;
+        }
+    } else {
+        return false;
+    }
+
 }
 
 class Message {
@@ -105,7 +105,7 @@ class Message {
         const messageDiv = document.createElement('div');
         messageDiv.classList.add('chatMessage');
         messageDiv.classList.add('card-panel');
-        messageDiv.dataset.messageID = this.messageID;
+        messageDiv.dataset.messageid = this.messageID;
 
         const authorSpan = document.createElement('span');
         authorSpan.classList.add('author');
@@ -126,6 +126,24 @@ class Message {
     }
 }
 
+let chatDiv = document.getElementById('viewChat');
+const placeholderMessage = new Message('', '', '', 1, chatDiv);
+placeholderMessage.init();
+
+let scrolled = false;
+function updateScroll(){
+    if(!scrolled){
+        chatDiv.scrollTop = chatDiv.scrollHeight;
+    }
+}
+chatDiv.onscroll = () => {
+    if (chatDiv.scrollTop < -2) {
+        scrolled = true;
+    } else {
+        scrolled = false;
+    }
+}
+
 getMessages();
 setInterval(() => {
     if (document.hasFocus()) {
@@ -138,3 +156,4 @@ document.addEventListener('DOMContentLoaded', function () {
     var elems = document.querySelectorAll('.sidenav');
     var instances = M.Sidenav.init(elems, {});
 });
+

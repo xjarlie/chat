@@ -60,7 +60,7 @@ body {
 
 .chatMessage:hover {
     background-color: var(--dark-hover);
-    transition-duration: 500ms;
+    transition-duration: 100ms;
 }
 
 .author {

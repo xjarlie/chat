@@ -1,5 +1,5 @@
 const express = require('express');
-const admin = require('firebase-admin')
+const _ = require('lodash');
 const db = require('../db/conn');
 const router = express.Router();
 
@@ -26,12 +26,23 @@ router.get('/:roomID', async (req, res) => {
     }
 });
 
-router.get('/:roomID/messages', async (req, res) => {
-    const { roomID } = req.params;
-
+router.get('/:roomID/messages/:lastID', async (req, res) => {
+    const { roomID, lastID: lastMsgID } = req.params;
     const messages = await db.orderedList(`rooms/${roomID}/messages`, 'timestamp', 'asc');
     if (messages) {
-        res.status(200).json(messages);
+
+        // Only send messages since last message
+        const reversed = _.reverse(_.clone(messages));
+        let newMessages = [];
+        for (const message in reversed) {
+            const id = reversed[message].id;
+            if (id == lastMsgID) {
+                break;
+            } else {
+                newMessages.push(reversed[message]);
+            }
+        }
+        res.status(200).json(_.reverse(newMessages));
     } else {
         res.status(404).send('No messages');
     }
@@ -48,7 +59,8 @@ router.post('/:roomID/messages', async (req, res) => {
     const message = {
         author: author,
         text: text,
-        timestamp: db.timestamp()
+        timestamp: db.timestamp(),
+        id: messageID
     };
     await db.set(messagePath, message);
     res.status(200).json({ id: messageID });
