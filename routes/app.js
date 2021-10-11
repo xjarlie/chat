@@ -8,6 +8,11 @@ router.get('/', (req, res) => {
     res.redirect('/app/rooms/exampleRoom');
 });
 
+router.get('/public', async (req, res) => {
+    const globalList = await db.orderedList('rooms', 'name', 'asc');
+    res.render('public', {list: globalList});
+});
+
 router.get('/rooms/create', (req, res) => {
     res.render('create', { name: '' });
 });

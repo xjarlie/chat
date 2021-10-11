@@ -1,0 +1,26 @@
+<div class="navbar" style="position: absolute; top: 0; width: 100%;">
+    <nav id="nav" class="deep-purple darken-2">
+        <div class="nav-wrapper">
+            <a href="#" data-target="nav-mobile" class="sidenav-trigger show-on-large"><i
+                    class="material-icons">menu</i></a>
+            <a href="#" class="brand-logo center truncate" id="navName">Example Room</a>
+        </div>
+    </nav>
+</div>
+<ul id="nav-mobile" class="sidenav">
+    <li><a href="/app/rooms/create" class="waves-effect waves-light btn deep-purple darken-2">Create Room</a></li>
+    <li><a href="/app/public" class="waves-effect waves-light"><i class="material-icons white-text">public</i>View
+            Public Rooms</a></li>
+    <li>
+        <div class="divider"></div>
+    </li>
+    <li><a class="subheader">Recent Rooms:</a></li>
+
+</ul>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var elems = document.querySelectorAll('.sidenav');
+        var instances = M.Sidenav.init(elems, {});
+    });
+</script>

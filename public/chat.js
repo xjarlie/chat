@@ -10,6 +10,12 @@ sendBtn.classList.add('disabled');
 
 document.getElementById('navName').textContent = roomID;
 localStoreRooms();
+async function setTitle() {
+    const response = await fetch('/rooms/' + roomID);
+    const data = await response.json();
+    document.getElementById('navName').textContent = data.name;
+}
+setTitle();
 authorInput.value = JSON.parse(localStorage.recentRooms)[roomID].username || '';
 
 
@@ -23,6 +29,7 @@ sendBtn.onclick = async () => {
 
 messageInput.onkeyup = async (e) => {
     if (e.keyCode == 13) {
+        e.preventDefault();
         if (messageInput.value && authorInput.value) {
             const data = { text: messageInput.value.trim(), author: authorInput.value.trim() };
             await sendMessage(data);
@@ -77,6 +84,7 @@ async function localStoreRooms() {
 }
 
 async function sendMessage(data) {
+    messageInput.value = '';
     const response = await fetch(`/rooms/${roomID}/messages`, {
         method: 'POST',
         headers: {
@@ -85,14 +93,12 @@ async function sendMessage(data) {
         body: JSON.stringify(data)
     });
 
-    messageInput.value = '';
     sendBtn.classList.add('disabled');
 
     const recentRooms = JSON.parse(localStorage.recentRooms);
     recentRooms[roomID].username = authorInput.value.trim();
     localStorage.recentRooms = JSON.stringify(recentRooms);
 
-    getMessages();
     return response.json();
 }
 
@@ -116,6 +122,14 @@ async function getMessages() {
 
     } else if (response.status == 404) {
         console.log('404 Received');
+    }
+
+    if (response) {
+        setTimeout(() => {
+            if (document.hasFocus()) {
+                getMessages();
+            }
+        }, 700);
     }
 }
 
@@ -144,11 +158,11 @@ class Message {
         let timeString;
         const today = new Date();
         if (this.date.getDate() == today.getDate()) {
-            timeString = this.date.toLocaleTimeString('en-GB', { timeZone: 'Asia/Seoul' });
+            timeString = this.date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
         } else if (this.timestamp == 1) {
             timeString = '';
         } else {
-            timeString = this.date.toLocaleDateString('en-GB', { timeZone: 'Asia/Seoul', year: '2-digit', month: '2-digit', day: '2-digit' });
+            timeString = this.date.toLocaleDateString('en-GB', { year: '2-digit', month: '2-digit', day: '2-digit' });
         }
 
         const messageDiv = document.createElement('div');
@@ -159,10 +173,7 @@ class Message {
         const timeSpan = document.createElement('span');
         timeSpan.classList.add('time');
         timeSpan.textContent = timeString;
-        // timeSpan.classList.add('tooltipped');
-        // timeSpan.dataset.position = 'top';
-        // timeSpan.dataset.tooltip = this.date.toLocaleString('en-GB', { timeZone: 'Asia/Seoul' });
-        timeSpan.title = this.date.toLocaleString('en-GB', { timeZone: 'Asia/Seoul' });
+        timeSpan.title = this.date.toLocaleString('en-GB');
 
         const authorSpan = document.createElement('span');
         authorSpan.classList.add('author');
@@ -209,11 +220,12 @@ chatDiv.onscroll = () => {
 }
 
 getMessages();
-setInterval(() => {
-    if (document.hasFocus()) {
-        getMessages();
-    }
-}, 700);
+window.addEventListener('focus', getMessages);
+// setInterval(() => {
+//     if (document.hasFocus()) {
+//         getMessages();
+//     }
+// }, 700);
 
 
 document.addEventListener('DOMContentLoaded', function () {

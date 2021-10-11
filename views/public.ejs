@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <%- include('./partials/head'); %>
+
+        <style>
+            :root {
+                --accent-dark: #512da8;
+                --accent-light: #9575cd;
+                --dark-bg: #121212;
+                --dark-hover: rgba(255, 255, 255, 0.08);
+            }
+
+            .card-panel {
+                background-color: var(--dark-hover) !important;
+            }
+
+            body,
+            .container {
+                background-color: #121212;
+            }
+
+            .sidenav {
+                background-color: var(--dark-bg);
+            }
+
+            .sidenav li a {
+                color: #fff;
+            }
+
+            .subheader {
+                color: grey !important;
+            }
+        </style>
+</head>
+
+<body>
+
+    <%- include('./partials/nav') %>
+
+        <div class="container">
+            <br />
+            <br />
+            <br />
+            <br />
+            <% for (const room in list) { if (!list[room].unlisted){%>
+                <div class="row">
+                    <div class="card-panel" onclick="window.location.href = '<%= '/app/rooms/' + list[room].name %>' "
+                        style="cursor: pointer">
+                        <b class="white-text">
+                            <%= list[room].name %>
+                        </b>
+                    </div>
+                </div>
+                <%}}%>
+        </div>
+
+        <%- include('./partials/foot') %>
+            <script>
+                document.getElementById('navName').textContent = 'Public Rooms';
+
+                async function local() {
+                    const rawRooms = localStorage.recentRooms || '{}';
+                    const recentRooms = JSON.parse(rawRooms);
+
+                    let dataToSend = {
+                        order: 'desc',
+                        property: 'timestamp',
+                        dataset: recentRooms
+                    };
+                    const response = await fetch('/util/sort', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(dataToSend)
+                    });
+                    const data = await response.json();
+
+                    for (const i in data) {
+                        const name = data[i].name;
+                        const container = document.getElementById('nav-mobile');
+                        const li = document.createElement('li');
+                        li.innerHTML = `<a href="/app/rooms/${name}" class="waves-effect waves-light">${name}</a>`
+                        container.append(li);
+                    }
+                }
+                local();
+
+            </script>
+</body>
+
+</html>

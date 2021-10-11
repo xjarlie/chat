@@ -8,13 +8,13 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-    const { id: roomID } = req.body;
-
+    const { id: roomID, unlisted: unlisted } = req.body;
+    console.log(req.body);
     const roomData = await db.get(`rooms/${roomID}`);
     if (roomData || roomID == 'create') {
         res.status(400).send('Room already exists');
     } else {
-        await db.set(`rooms/${roomID}`, { name: roomID, exists: true });
+        await db.set(`rooms/${roomID}`, { name: roomID, exists: true, unlisted: unlisted });
         res.status(200).json({ id: roomID });
     }
 });

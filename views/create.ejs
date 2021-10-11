@@ -47,6 +47,16 @@
                 <input placeholder="Give your new room a name" id="inputName" type="text"
                     value="<%= name %>" />
                 <label for="inputName">Room Name</label>
+                <span class="helper-text grey-text">Room names should not have spaces</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="switch" title="Unlisted rooms can only be accessed with the room name, and are not shown on the list of public rooms">
+                <label>
+                    Make this room unlisted
+                    <input type="checkbox" id="unlisted"/>
+                    <span class="lever"></span>
+                </label>
             </div>
         </div>
         <div class="row">
@@ -62,10 +72,11 @@
     <script>
         const inputName = document.getElementById('inputName');
         const sendBtn = document.getElementById('sendBtn');
+        const checkbox = document.getElementById('unlisted');
         sendBtn.onclick = async () => {
             const roomID = inputName.value.trim();
             if (roomID) {
-                const data = { id: roomID };
+                const data = { id: roomID, unlisted: checkbox.checked };
                 const response = await fetch(`/rooms`, {
                     method: 'POST',
                     headers: {
@@ -76,7 +87,6 @@
 
                 if (response.status == 200) {
                     const data = response.json();
-                    alert('Room created');
                     window.location.href = '/app/rooms/' + roomID;
                 } else if (response.status == 400) {
                     if (confirm('Room with that name already exists. Go there?')) {
