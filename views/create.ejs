@@ -26,12 +26,30 @@
                 background-color: #121212;
             }
 
-            h2, input {
+            h2,
+            input {
                 color: white;
             }
 
             #sendBtn {
                 background-color: var(--accent-dark);
+            }
+
+            ::placeholder {
+                /* Chrome, Firefox, Opera, Safari 10.1+ */
+                color: grey;
+                opacity: 1;
+                /* Firefox */
+            }
+
+            :-ms-input-placeholder {
+                /* Internet Explorer 10-11 */
+                color: grey;
+            }
+
+            ::-ms-input-placeholder {
+                /* Microsoft Edge */
+                color: grey;
             }
         </style>
 </head>
@@ -44,17 +62,17 @@
         </div>
         <div class="row">
             <div class="input-field" id="inputNameWrap">
-                <input placeholder="Give your new room a name" id="inputName" type="text"
-                    value="<%= name %>" />
+                <input placeholder="Give your new room a name" id="inputName" type="text" value="<%= name %>" />
                 <label for="inputName">Room Name</label>
                 <span class="helper-text grey-text">Room names should not have spaces</span>
             </div>
         </div>
         <div class="row">
-            <div class="switch" title="Unlisted rooms can only be accessed with the room name, and are not shown on the list of public rooms">
+            <div class="switch"
+                title="Unlisted rooms can only be accessed with the room name, and are not shown on the list of public rooms">
                 <label>
                     Make this room unlisted
-                    <input type="checkbox" id="unlisted"/>
+                    <input type="checkbox" id="unlisted" />
                     <span class="lever"></span>
                 </label>
             </div>
