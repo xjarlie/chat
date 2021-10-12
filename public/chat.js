@@ -15,7 +15,12 @@ async function verifyPassword() {
     const resp = await fetch(`/rooms/${roomID}`);
     const dat = await resp.json();
     if (dat.hash) {
-        let password = window.prompt(`Enter this room's password:`);
+        let password;
+        if (sessionStorage[`${roomID}/password`]) {
+            password = sessionStorage[`${roomID}/password`];
+        } else {
+            password = window.prompt(`Enter this room's password:`);
+        }
 
         const response = await fetch(`/rooms/${roomID}/verifypw`, {
             method: 'POST',
@@ -28,6 +33,7 @@ async function verifyPassword() {
         const data = await response.json();
 
         if (data.verified) {
+            sessionStorage[`${roomID}/password`] = password;
             setTitle();
             getMessages();
             window.addEventListener('focus', getMessages);
