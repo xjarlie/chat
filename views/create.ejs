@@ -12,7 +12,7 @@
                 --dark-hover: rgba(255, 255, 255, 0.08);
             }
 
-            #inputName:focus {
+            #inputName:focus, #inputPassword:focus {
                 border-bottom: 1px solid var(--accent-light);
                 box-shadow: 0 1px 0 0 var(--accent-light);
             }
@@ -78,6 +78,23 @@
             </div>
         </div>
         <div class="row">
+            <div class="switch"
+                title="Passwords restrict access to your room, and cannot be changed or viewed after creating.">
+                <label>
+                    Password-protect this room
+                    <input type="checkbox" id="passwordCheckbox" />
+                    <span class="lever"></span>
+                </label>
+            </div>
+        </div>
+        <div class="row" id="passwordInputWrapper" hidden>
+            <div class="input-field">
+                <input placeholder="Give your room a password" id="inputPassword" type="text" />
+
+                <span class="helper-text grey-text">Passwords are case-sensitive</span>
+            </div>
+        </div>
+        <div class="row">
             <div class="input-field" id="sendBtnWrap">
                 <button type="button" class="waves-effect waves-light btn" id="sendBtn">
                     <i class="material-icons left">add</i>
@@ -91,33 +108,42 @@
         const inputName = document.getElementById('inputName');
         const sendBtn = document.getElementById('sendBtn');
         const checkbox = document.getElementById('unlisted');
+        const passwordCheckbox = document.getElementById('passwordCheckbox');
+        const inputPassword = document.getElementById('inputPassword');
+        const passwordInputWrapper = document.getElementById('passwordInputWrapper');
         sendBtn.onclick = async () => {
             const roomID = inputName.value.trim();
             if (roomID) {
-                const data = { id: roomID, unlisted: checkbox.checked };
-                const response = await fetch(`/rooms`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                });
 
-                if (response.status == 200) {
-                    const data = response.json();
-                    window.location.href = '/app/rooms/' + roomID;
-                } else if (response.status == 400) {
-                    if (confirm('Room with that name already exists. Go there?')) {
+                if ((inputPassword.value.trim() && passwordCheckbox.checked) || !passwordCheckbox.checked) {
+                    const data = { id: roomID, unlisted: checkbox.checked };
+                    if (inputPassword.value) data.password = inputPassword.value.trim();
+                    const response = await fetch(`/rooms`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    if (response.status == 200) {
+                        const data = response.json();
                         window.location.href = '/app/rooms/' + roomID;
+                    } else if (response.status == 400) {
+                        if (confirm('Room with that name already exists. Go there?')) {
+                            window.location.href = '/app/rooms/' + roomID;
+                        }
                     }
                 }
             }
         }
 
-        inputName.onkeypress = (e) => {
-            if (e.keyCode == 32) {
-                e.preventDefault();
-            }
+        passwordCheckbox.onclick = () => {
+            passwordInputWrapper.hidden = !passwordCheckbox.checked;
+        }
+
+        inputName.oninput = (e) => {
+            inputName.value = inputName.value.replace(' ', '-');
         }
     </script>
     <%- include('./partials/foot') %>

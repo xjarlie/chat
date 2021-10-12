@@ -5,8 +5,43 @@ const messageLog = document.getElementById('log');
 
 const { hostname, protocol, port, pathname } = window.location;
 
+
+
 const roomID = pathname.split('/')[3];
 sendBtn.classList.add('disabled');
+
+async function verifyPassword() {
+
+    const resp = await fetch(`/rooms/${roomID}`);
+    const dat = await resp.json();
+    if (dat.hash) {
+        let password = window.prompt(`Enter this room's password:`);
+
+        const response = await fetch(`/rooms/${roomID}/verifypw`, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ password })
+        });
+
+        const data = await response.json();
+
+        if (data.verified) {
+            setTitle();
+            getMessages();
+            window.addEventListener('focus', getMessages);
+        } else {
+            alert('Incorrect password.');
+            verifyPassword();
+        }
+    } else {
+        setTitle();
+        getMessages();
+        window.addEventListener('focus', getMessages);
+    }
+}
+verifyPassword();
 
 document.getElementById('navName').textContent = roomID;
 localStoreRooms();
@@ -15,7 +50,6 @@ async function setTitle() {
     const data = await response.json();
     document.getElementById('navName').textContent = data.name;
 }
-setTitle();
 authorInput.value = JSON.parse(localStorage.recentRooms)[roomID].username || '';
 
 
@@ -115,7 +149,9 @@ async function getMessages() {
             const { author, text, timestamp, id } = data[message];
 
             const messageDOM = new Message(id, author, text, timestamp, chatDiv);
-            messageDOM.init();
+            if (!messageDOM.checkExists()) {
+                messageDOM.init();
+            }
         }
 
         updateScroll();
@@ -129,15 +165,15 @@ async function getMessages() {
             if (document.hasFocus()) {
                 getMessages();
             }
-        }, 700);
+        }, 400);
     }
 }
 
 function lastID() {
     const chatDiv = document.getElementById('viewChat');
     if (chatDiv.children[0]) {
-        if (chatDiv.children[0].dataset.messageid) {
-            return chatDiv.children[0].dataset.messageid;
+        if (chatDiv.children[0].id) {
+            return chatDiv.children[0].id;
         } else {
             return '1';
         }
@@ -168,7 +204,7 @@ class Message {
         const messageDiv = document.createElement('div');
         messageDiv.classList.add('chatMessage');
         messageDiv.classList.add('card-panel');
-        messageDiv.dataset.messageid = this.messageID;
+        messageDiv.id = this.messageID;
 
         const timeSpan = document.createElement('span');
         timeSpan.classList.add('time');
@@ -192,6 +228,11 @@ class Message {
 
     init() {
         this.chatDiv.prepend(this.messageDiv);
+    }
+
+    checkExists() {
+        const exists = this.chatDiv.querySelector(`#${CSS.escape(this.messageID)}`) != null;
+        return exists;
     }
 }
 
@@ -219,8 +260,7 @@ chatDiv.onscroll = () => {
     }
 }
 
-getMessages();
-window.addEventListener('focus', getMessages);
+
 // setInterval(() => {
 //     if (document.hasFocus()) {
 //         getMessages();
