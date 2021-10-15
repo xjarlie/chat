@@ -66,7 +66,6 @@ router.post('/:roomID/messages', async (req, res) => {
     const { roomID } = req.params;
     const { author, text } = req.body;
 
-
     const { path: messagePath, id: messageID } = await db.push(`rooms/${roomID}/messages`);
     const message = {
         author: author,
