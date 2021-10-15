@@ -10,7 +10,7 @@ router.get('/', (req, res) => {
 
 router.get('/public', async (req, res) => {
     const globalList = await db.orderedList('rooms', 'name', 'asc');
-    res.render('public', {list: globalList});
+    res.render('public', { list: globalList, name: 'Public Rooms' });
 });
 
 router.get('/rooms/create', (req, res) => {
@@ -21,7 +21,7 @@ router.get('/rooms/:roomID', async (req, res) => {
     const { roomID } = req.params;
     const roomData = await db.get(`rooms/${roomID}`);
     if (roomData) {
-        res.render('chat');
+        res.render('chat', { name: roomData.name });
     } else {
         res.render('create', { name: roomID });
     }

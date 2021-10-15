@@ -42,20 +42,13 @@ async function verifyPassword() {
             verifyPassword();
         }
     } else {
-        setTitle();
         getMessages();
         window.addEventListener('focus', getMessages);
     }
 }
 verifyPassword();
 
-document.getElementById('navName').textContent = roomID;
 localStoreRooms();
-async function setTitle() {
-    const response = await fetch('/rooms/' + roomID);
-    const data = await response.json();
-    document.getElementById('navName').textContent = data.name;
-}
 authorInput.value = JSON.parse(localStorage.recentRooms)[roomID].username || '';
 
 
