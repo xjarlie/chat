@@ -12,7 +12,8 @@
                 --dark-hover: rgba(255, 255, 255, 0.08);
             }
 
-            #inputName:focus, #inputPassword:focus {
+            #inputName:focus,
+            #inputPassword:focus {
                 border-bottom: 1px solid var(--accent-light);
                 box-shadow: 0 1px 0 0 var(--accent-light);
             }
@@ -105,7 +106,15 @@
         </div>
         <div class="row" id="timeoutInputWrapper" hidden>
             <div class="input-field">
-                <input />
+                <select id="inputTimeout">
+                    <option value="0.25" selected>15 minutes</option>
+                    <option value="0.5">30 minutes</option>
+                    <% for (let i=1; i<=12; i++) { %>
+                        <option value="<%= i %>">
+                            <%-i%> hours
+                        </option>
+                        <% } %>
+                </select>
             </div>
         </div>
         <div class="row">
@@ -125,6 +134,9 @@
         const passwordCheckbox = document.getElementById('passwordCheckbox');
         const inputPassword = document.getElementById('inputPassword');
         const passwordInputWrapper = document.getElementById('passwordInputWrapper');
+        const inputTimeout = document.getElementById('inputTimeout');
+        const timeoutInputWrapper = document.getElementById('timeoutInputWrapper');
+        const timeoutCheckbox = document.getElementById('timeoutCheckbox');
         sendBtn.onclick = async () => {
             const roomID = inputName.value.trim();
             if (roomID) {
@@ -132,6 +144,7 @@
                 if ((inputPassword.value.trim() && passwordCheckbox.checked) || !passwordCheckbox.checked) {
                     const data = { id: roomID, unlisted: checkbox.checked };
                     if (inputPassword.value) data.password = inputPassword.value.trim();
+                    if (timeoutCheckbox.checked) data.timeout = inputTimeout.value;
                     const response = await fetch(`/rooms`, {
                         method: 'POST',
                         headers: {
@@ -156,9 +169,18 @@
             passwordInputWrapper.hidden = !passwordCheckbox.checked;
         }
 
+        timeoutCheckbox.onclick = () => {
+            timeoutInputWrapper.hidden = !timeoutCheckbox.checked;
+        }
+
         inputName.oninput = (e) => {
             inputName.value = inputName.value.replace(' ', '-');
         }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var elems = document.querySelectorAll('select');
+            var instances = M.FormSelect.init(elems, {});
+        });
     </script>
     <%- include('./partials/foot') %>
 </body>

@@ -34,7 +34,6 @@ async function verifyPassword() {
 
         if (data.verified) {
             sessionStorage[`${roomID}/password`] = password;
-            setTitle();
             getMessages();
             window.addEventListener('focus', getMessages);
         } else {

@@ -7,15 +7,20 @@
                 <%= name %>
             </a>
             <ul class="right">
-                <a href="#" data-clipboard-text id="url" title='Copy link to clipboard'><i
-                        class="material-icons white-text waves-effect waves-light right">share</i></a>
+                <% if (locals.timeoutStamp) { %>
+                    <li class="waves-effect waves-light"><a href="#" data-timeoutstamp="<%= timeoutStamp %>"
+                            id="timeout" title="Show timeout"><i class="material-icons white-text">schedule</i></a></li>
+                    <% } %>
+                    <li class="waves-effect waves-light"><a href="#" data-clipboard-text id="url"
+                                title='Copy link to clipboard'><i class="material-icons white-text">share</i></a></li>
             </ul>
         </div>
     </nav>
 </div>
 <ul id="nav-mobile" class="sidenav">
     <li><a href="/app/rooms/create" class="waves-effect waves-light btn deep-purple darken-2">Create Room</a></li>
-    <li><a href="https://github.com/xjarlie/chat" target="_blank" class="waves-effect waves-light"><i class="material-icons white-text">link</i>Open GitHub repo</a></li>
+    <li><a href="https://github.com/xjarlie/chat" target="_blank" class="waves-effect waves-light"><i
+                class="material-icons white-text">link</i>Open GitHub repo</a></li>
     <li><a href="/app/public" class="waves-effect waves-light"><i class="material-icons white-text">public</i>View
             Public Rooms</a></li>
     <li>
@@ -40,4 +45,11 @@
     clipboard.on('success', (e) => {
         M.toast({ html: 'Link copied!' });
     });
+
+    const timeoutBtn = document.getElementById('timeout');
+    if (timeoutBtn) {
+        timeoutBtn.onclick = () => {
+            M.toast({ html: `Room will be deleted at: ${new Date(parseInt(timeoutBtn.dataset.timeoutstamp)).toLocaleString()}` });
+        };
+    }
 </script>
