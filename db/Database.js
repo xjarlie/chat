@@ -1,5 +1,4 @@
 const { promises: fs } = require('fs');
-const _path = require('path');
 const _ = require('lodash');
 const { v4: uuidv4 } = require('uuid');
 
@@ -25,6 +24,13 @@ class Database {
         const db = await this.loadDB();
         
         const data = _.get(db, this.pathToArray(path));
+        return data;
+    }
+
+    async getArray(path) {
+        const db = await this.loadDB();
+
+        const data = _.values(_.get(db, this.pathToArray(path)));
         return data;
     }
 
@@ -67,7 +73,7 @@ class Database {
         return sorted;
     }
 
-    timestamp() {
+    static timestamp() {
         return _.now();
     }
 

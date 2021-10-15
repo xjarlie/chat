@@ -1,6 +1,7 @@
 const express = require('express');
 const _ = require('lodash');
 const db = require('../db/conn');
+const Database = require('../db/Database');
 const router = express.Router();
 const crypto = require('crypto');
 
@@ -17,7 +18,7 @@ router.post('/', async (req, res) => {
     } else {
         let data = { name: roomID, exists: true, unlisted: unlisted };
         if (timeout) {
-            const now = db.timestamp();
+            const now = Database.timestamp();
             let timeoutStamp = now + (timeout*3600*1000); // Add number of hours to timestamp
             data.timeoutStamp = timeoutStamp;
         }
@@ -76,7 +77,7 @@ router.post('/:roomID/messages', async (req, res) => {
     const message = {
         author: author,
         text: text,
-        timestamp: db.timestamp(),
+        timestamp: Database.timestamp(),
         id: messageID
     };
     await db.set(messagePath, message);
