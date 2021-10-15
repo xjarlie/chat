@@ -20,8 +20,25 @@ router.get('/rooms/create', (req, res) => {
 router.get('/rooms/:roomID', async (req, res) => {
     const { roomID } = req.params;
     const roomData = await db.get(`rooms/${roomID}`);
+
     if (roomData) {
-        res.render('chat', { name: roomData.name });
+        let data = { name: roomData.name };
+
+        // Check room timeout
+        const now = db.timestamp();
+        if (roomData.timeoutStamp) {
+
+            if (roomData.timeoutStamp <= now) {
+                db.remove(`rooms/${roomID}`);
+                res.render('create', data);
+            } else {
+                data.timeoutStamp = roomData.timeoutStamp;
+                res.render('chat', data);
+            }
+        } else {
+            res.render('chat', data);
+        }
+
     } else {
         res.render('create', { name: roomID });
     }
