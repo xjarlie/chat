@@ -9,8 +9,8 @@ class Authentication extends Database {
         super(filePath);
     }
 
-    async createAccount(username, password, callback) {
-        const user = new User(this);
+    async createAccount(username, password, callback = (err) => { }) {
+        const user = {};
 
         user.uuid = uuidv4();
         user.username = username;
@@ -18,14 +18,7 @@ class Authentication extends Database {
         user.password = Authentication.hash(password, user.salt);
 
         // Check username
-        const list = await this.get('users');
-        let exists = false;
-        for (const u in list) {
-            if (list[u].username == user.username) {
-                exists = true;
-                break;
-            }
-        }
+        const exists = await this.getUser({ username });
 
         if (!exists) {
             await this.set(`users/${user.uuid}`, user);
@@ -37,81 +30,103 @@ class Authentication extends Database {
         }
     }
 
-    async logIn(username, password) {
-        const list = await this.get('users');
-        let user;
-        for (const u in list) {
-            if (list[u].username == username) {
-                user = await this.getUser(list[u].uuid);
-                break;
-            }
-        }
+    async logIn(username, password, callback = (err) => { }) {
+        const user = await this.getUser({ username });
         if (user) {
             const testHash = Authentication.hash(password, user.salt);
             if (testHash == user.password) {
+                return this.getToken(user.uuid, true);
+            } else {
+                callback({ code: 403, message: 'Error: Password incorrect' });
+            }
+        } else {
+            callback({ code: 404, message: 'Error: User does not exist' });
+        }
+    }
+
+    async getUser({ username, uuid }) {
+        if (uuid) {
+            const data = await this.get(`users/${uuid}`);
+            if (data) {
+                return data;
+            }
+        } else if (username) {
+            const list = await this.get('users');
+            let user;
+            for (const i in list) {
+                if (list[i].username == username) {
+                    user = list[i];
+                    break;
+                }
+            }
+            if (user) {
                 return user;
+            } else {
+                return false;
             }
         }
-
     }
 
-    async getUser(uuid) {
-        const data = await this.get(`users/${uuid}`);
-        if (data) {
-            return this.toUser(data);
+    async getToken(uuid, forcegen) {
+        const timestamp = Authentication.timestamp();
+        const user = await this.getUser({ uuid });
+
+        const timeout = { time: 6, unit: 'hours'};
+
+        if (forcegen) {
+            user.token = Authentication.generateToken(timeout.time, timeout.unit);
+            this.updateUser(user);
         }
+
+        if (user.token) {
+            if (user.token.timeout <= timestamp) {
+                user.token = Authentication.generateToken(timeout.time, timeout.unit);
+                this.updateUser(user);
+            }
+        } else {
+            user.token = Authentication.generateToken(timeout.time, timeout.unit);
+            this.updateUser(user);
+        }
+
+        return user.token.hash;
     }
 
-    toUser(obj) {
-        const user = new User(this);
-        for (const i in obj) {
-            user[i] = obj[i];
-        }
-        return user;
+    async updateUser(user) {
+        this.set(`users/${user.uuid}`, user);
     }
 
     static hash(text, salt, iterations = 1024, length = 64) {
         const hash = crypto.pbkdf2Sync(text, salt, iterations, length, 'sha512').toString('hex');
         return hash;
     }
-}
 
-class User {
-    constructor(auth) {
-        this.auth = auth;
-
-        this.uuid;
-        this.username;
-        this.password;
-        this.salt;
-        this.token;
-        this.test();
-    }
-
-    async test() {
-        console.log('here', await this.auth.set('hello', 'world'));
-    }
-
-    async getToken() {
-        const timestamp = Authentication.timestamp();
-        if (!this.token || this.token.timestamp <= timestamp) {
-            const tokenSalt = crypto.randomBytes(32).toString('hex');
-            const tokenHash = Authentication.hash(this.uuid, tokenSalt);
-            this.token = { hash: tokenHash, salt: tokenSalt, timestamp: timestamp};
-            console.log(this.auth);
-            //await this.auth.set(`users/${this.uuid}`, this);
+    static addTime(timestamp, time, unit) {
+        switch (unit) {
+            case 'hours':
+                timestamp += time * 3600000;
+                break;
+            case 'minutes':
+                timestamp += time * 60000;
+                break;
+            case 'days':
+                timestamp += time * 86400000;
+                break;
+            case 'seconds':
+                timestamp += time * 1000;
+                break;
+            default:
+                console.log('broke');
+                break;
         }
-        return this.token.hash;
+        return timestamp;
     }
 
-    toString() {
-        return {
-            uuid: this.uuid,
-            username: this.username,
-            salt: this.salt,
-            password: this.password,
-            token: this.token
-        };
+    static generateToken(timeout, unit) {
+        const timestamp = Authentication.timestamp();
+        const tokenHash = crypto.randomBytes(64).toString('hex');
+        const timeoutStamp = Authentication.addTime(timestamp, timeout, unit);
+        const token = { hash: tokenHash, timestamp: timestamp, timeout: timeoutStamp};
+        return token;
     }
 }
 

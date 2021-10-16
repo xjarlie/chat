@@ -3,10 +3,12 @@ const path = require('path');
 
 async function lol() {
     const auth = new Authentication(path.join(__dirname, 'auth.json'));
-    let user = await auth.logIn('xjarlie2', 'lol');
-    //const user = await auth.createAccount('xjarlie3', 'lol');
-    console.log(await user.getToken());
-    console.log(user);
+    const username = 'xjarlie';
+    const password = 'lol';
+    const userToken = await auth.logIn(username, password);
+    //const user = await auth.createAccount(username, password, console.log);
+    console.log(userToken);
+
 }
 
 lol();
