@@ -4,7 +4,6 @@ const path = require('path');
 
 const indexRouter = require('./routes/index');
 const appRouter = require('./routes/app');
-const usersRouter = require('./routes/users');
 const roomsRouter = require('./routes/rooms');
 const utilRouter = require('./routes/util');
 
@@ -20,7 +19,6 @@ app.use(express.json());
 
 app.use('/', indexRouter);
 app.use('/app', appRouter);
-app.use('/users', usersRouter);
 app.use('/rooms', roomsRouter);
 app.use('/util', utilRouter);
 

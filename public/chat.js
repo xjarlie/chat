@@ -1,11 +1,8 @@
 const messageInput = document.getElementById('messageInput');
 const authorInput = document.getElementById('authorInput');
 const sendBtn = document.getElementById('sendBtn');
-const messageLog = document.getElementById('log');
 
-const { hostname, protocol, port, pathname } = window.location;
-
-
+const { pathname } = window.location;
 
 const roomID = pathname.split('/')[3];
 sendBtn.classList.add('disabled');
@@ -71,7 +68,7 @@ messageInput.onkeyup = async (e) => {
     sendBtnAble();
 }
 
-authorInput.onkeyup = (e) => {
+authorInput.onkeyup = () => {
     sendBtnAble();
 }
 
@@ -268,25 +265,27 @@ chatDiv.onscroll = () => {
 
 document.addEventListener('DOMContentLoaded', function () {
     var elems = document.querySelectorAll('.sidenav');
-    var instances = M.Sidenav.init(elems, {});
+    // eslint-disable-next-line no-undef
+    M.Sidenav.init(elems, {});
 
     var elems2 = document.querySelectorAll('.tooltipped');
-    var instances2 = M.Tooltip.init(elems2, {});
+    // eslint-disable-next-line no-undef
+    M.Tooltip.init(elems2, {});
 });
 
 function linkify(inputText) {
-    var replacedText, replacePattern1, replacePattern2, replacePattern3, replacePattern4;
+    var replacedText, replacePattern1, replacePattern2, replacePattern3;
 
     //URLs starting with http://, https://, or ftp://
-    replacePattern1 = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
+    replacePattern1 = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])/gim;
     replacedText = inputText.replace(replacePattern1, '<a href="$1" target="_blank">$1</a>');
 
     //URLs starting with "www." (without // before it, or it'd re-link the ones done above).
-    replacePattern2 = /(^|[^\/])(www\.[\S]+(\b|$))/gim;
+    replacePattern2 = /(^|[^/])(www\.[\S]+(\b|$))/gim;
     replacedText = replacedText.replace(replacePattern2, '$1<a href="http://$2" target="_blank">$2</a>');
 
     //Change email addresses to mailto:: links.
-    replacePattern3 = /(([a-zA-Z0-9\-\_\.])+@[a-zA-Z\_]+?(\.[a-zA-Z]{2,6})+)/gim;
+    replacePattern3 = /(([a-zA-Z0-9\-_.])+@[a-zA-Z_]+?(\.[a-zA-Z]{2,6})+)/gim;
     replacedText = replacedText.replace(replacePattern3, '<a href="mailto:$1">$1</a>');
 
     return replacedText;
