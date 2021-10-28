@@ -212,7 +212,7 @@ class Message {
 
         const textSpan = document.createElement('span');
         textSpan.classList.add('text');
-        textSpan.innerHTML = linkify(this.text);
+        textSpan.innerHTML = linkify(escapeHTML(this.text));
 
         messageDiv.append(timeSpan);
         messageDiv.append(authorSpan);
@@ -289,4 +289,10 @@ function linkify(inputText) {
     replacedText = replacedText.replace(replacePattern3, '<a href="mailto:$1">$1</a>');
 
     return replacedText;
+}
+
+function escapeHTML(html) {
+    var escape = document.createElement('textarea');
+    escape.textContent = html;
+    return escape.innerHTML;
 }
