@@ -1,5 +1,5 @@
 const path = require('path');
-const Database = require('./Database');
+const Database = require('x-jsondb');
 
 const db = new Database(path.join(__dirname, '../database/db.json'));
 db.set('rooms/exampleRoom/exists', true);
